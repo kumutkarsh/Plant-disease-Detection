@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeafScan - Analysis Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=3.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-dark: #1b4332;
+            --accent-green: #2d6a4f;
+            --light-bg: #f7fafc;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, rgba(233, 245, 219, 0.9) 0%, rgba(248, 249, 250, 0.9) 100%), 
+                        url("{{ url_for('static', filename='images/leaf-bg.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* FIXED PERFECT MATRIX NAVBAR MECHANICS */
+        .navbar {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr; 
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--primary-dark);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            width: 100%;
+        }
+        
+        .navbar-left { display: flex; justify-content: flex-start; }
+        .navbar-right { display: flex; justify-content: flex-end; gap: 15px; align-items: center; }
+
+        .logo {
+            color: white;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu-tabs {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-menu-tabs a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.2s ease;
+            position: relative;
+            padding-bottom: 4px;
+        }
+
+        .nav-menu-tabs a:hover { color: white; }
+        .nav-menu-tabs a.active-tab { color: #ffb703; font-weight: 700; }
+
+        .nav-menu-tabs a.active-tab::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #ffb703;
+            border-radius: 2px;
+        }
+
+        .user-badge { color: white; font-weight: 600; font-size: 0.95rem; }
+
+        .logout-btn {
+            background: #e63946;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        /* Layout Framework */
+        .workspace-container {
+            max-width: 1100px;
+            width: 100%;
+            margin: auto;
+            padding: 2rem;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(12, 46, 29, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            display: grid;
+            grid-template-columns: 1fr 1.3fr;
+            gap: 3rem;
+            align-items: start;
+        }
+
+        @media (max-width: 768px) {
+            .result-card { grid-template-columns: 1fr; padding: 1.5rem; gap: 1.5rem; }
+        }
+
+        .image-preview-box {
+            width: 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .image-preview-box img { width: 100%; height: auto; display: block; object-fit: cover; }
+        .summary-details { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        .action-badge {
+            align-self: flex-start;
+            background: #fff5f5;
+            color: #e53e3e;
+            border: 1px solid #fed7d7;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .summary-details h1 { color: var(--primary-dark); font-size: 2.2rem; font-weight: 800; margin-top: -0.5rem; }
+
+        .metrics-table {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-dark);
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .metric-row { display: flex; justify-content: space-between; font-size: 1rem; padding-bottom: 0.5rem; border-bottom: 1px dashed #e2e8f0; }
+        .metric-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .metric-label { color: #64748b; font-weight: 600; }
+        .metric-value { color: var(--primary-dark); font-weight: 700; }
+
+        /* ADDED TREATMENT RECOVERY SECTIONS STYLING */
+        .treatment-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 576px) { .treatment-section { grid-template-columns: 1fr; } }
+
+        .treatment-box {
+            padding: 1.25rem;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            border: 1px solid #e2e8f0;
+        }
+
+        .treatment-box h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .treatment-box p {
+            font-size: 0.88rem;
+            color: #4a5568;
+            line-height: 1.5;
+        }
+
+        .box-medicine { background: #f0fdfa; border-left: 4px solid #0d9488; }
+        .box-medicine h4 { color: #0d9488; }
+        .box-organic { background: #f0fdf4; border-left: 4px solid #16a34a; }
+        .box-organic h4 { color: #16a34a; }
+
+        .box-prevention {
+            background: #fdfbe7;
+            border-left: 4px solid #ca8a04;
+            grid-column: span 2;
+        }
+        .box-prevention h4 { color: #ca8a04; }
+        @media (max-width: 576px) { .box-prevention { grid-column: span 1; } }
+
+        /* Weather Component */
+        .weather-advisory {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .weather-header { display: flex; justify-content: space-between; align-items: center; }
+        .weather-title { font-weight: 700; color: var(--primary-dark); display: flex; align-items: center; gap: 8px; }
+        .weather-alert-badge { color: white; padding: 4px 12px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; }
+        .weather-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; background: #f8fafc; padding: 10px; border-radius: 10px; text-align: center; }
+        .weather-item span { display: block; }
+        .weather-item-lbl { font-size: 0.8rem; color: #94a3b8; font-weight: 600; }
+        .weather-item-val { font-weight: 700; color: #334155; font-size: 0.95rem; }
+        .weather-footer-note { font-size: 0.85rem; color: #64748b; font-style: italic; line-height: 1.4; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="logo">
+                <i class="fa-solid fa-leaf"></i> LEAFSCAN
+            </a>
+        </div>
+
+        <div>
+            <ul class="nav-menu-tabs">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('upload') }}" class="active-tab">Scan Leaf</a></li>
+                <li><a href="{{ url_for('history') }}">History</a></li>
+                <li><a href="{{ url_for('growth') }}">Growth</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-right">
+            <span class="user-badge">Hello, {{ session.get('user') or 'Shivam' }} 👋</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+        </div>
+    </nav>
+
+    <main class="workspace-container">
+        <div class="result-card">
+            
+            <div class="image-preview-box">
+                <img src="{{ url_for('static', filename='uploads/' ~ filename) }}" alt="Analyzed Specimen Image">
+            </div>
+
+            <div class="summary-details">
+                
+                <div class="action-badge">
+                    <i class="fa-solid fa-circle-exclamation"></i> Analysis Status Completed
+                </div>
+
+                <h1>Analysis Summary</h1>
+
+                <div class="metrics-table">
+                    <div class="metric-row">
+                        <span class="metric-label">Target Plant Crop:</span>
+                        <span class="metric-value" style="color: #2d6a4f;">{{ plant }}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Threat Category:</span>
+                        <span class="metric-value">{{ classification_type }}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Identified Target:</span>
+                        <span class="metric-value" style="color: #1b4332;">{{ prediction }}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Detection Confidence:</span>
+                        <span class="metric-value"><span style="background: #e2e8f0; padding: 2px 8px; border-radius: 10px; font-size: 0.9rem;">{{ confidence }}</span></span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">Infection Severity:</span>
+                        <span class="metric-value" style="color: #e53e3e;">{{ severity }}</span>
+                    </div>
+                </div>
+
+                <div class="treatment-section">
+                    <div class="treatment-box box-medicine">
+                        <h4><i class="fa-solid fa-capsules"></i> Chemical Prescription</h4>
+                        <p>{{ treatment }}</p>
+                    </div>
+                    
+                    <div class="treatment-box box-organic">
+                        <h4><i class="fa-solid fa-seedling"></i> Organic Alternative</h4>
+                        <p>{{ organic }}</p>
+                    </div>
+                    
+                    <div class="treatment-box box-prevention">
+                        <h4><i class="fa-solid fa-shield-halved"></i> Long-term Prevention Plan</h4>
+                        <p>{{ prevention }}</p>
+                    </div>
+                </div>
+
+                <div class="weather-advisory">
+                    <div class="weather-header">
+                        <span class="weather-title"><i class="fa-solid fa-cloud-showers-heavy"></i> Live Weather Advisory</span>
+                        <span class="weather-alert-badge" style="background-color: {{ weather.badge_color or '#e67e22' }};">
+                            {{ weather.alert }}
+                        </span>
+                    </div>
+                    
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <span class="weather-item-lbl">Condition</span>
+                            <span class="weather-item-val" style="font-size: 0.8rem; line-height: 1.2;">{{ weather.condition.split('/')[0].strip() }}</span>
+                        </div>
+                        <div class="weather-item">
+                            <span class="weather-item-lbl">Temp</span>
+                            <span class="weather-item-val">{{ weather.temp }}</span>
+                        </div>
+                        <div class="weather-item">
+                            <span class="weather-item-lbl">Humidity</span>
+                            <span class="weather-item-val">{{ weather.humidity }}</span>
+                        </div>
+                    </div>
+
+                    <p class="weather-footer-note">
+                        <strong>Field Action Note:</strong> {{ weather.advice }}
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeafScan - Scan Leaf Workspace</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=3.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-dark: #1b4332;
+            --accent-green: #2d6a4f;
+            --light-green-bg: #e9f5db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, rgba(233, 245, 219, 0.9) 0%, rgba(248, 249, 250, 0.9) 100%), 
+                        url("{{ url_for('static', filename='images/leaf-bg.jpg') }}") no-repeat center center fixed;
+            background-size: cover;
+            font-family: system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Fixed Navigation Alignment Setup */
+        .navbar {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--primary-dark);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            width: 100%;
+        }
+        
+        .navbar-left {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .navbar-right {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .logo {
+            color: white;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu-tabs {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            margin: 0;
+            padding: 0;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-menu-tabs a {
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.75);
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.2s ease;
+            position: relative;
+            padding-bottom: 4px;
+        }
+
+        .nav-menu-tabs a:hover {
+            color: white;
+        }
+
+        .nav-menu-tabs a.active-tab {
+            color: #ffb703;
+            font-weight: 700;
+        }
+
+        .nav-menu-tabs a.active-tab::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #ffb703;
+            border-radius: 2px;
+        }
+
+        .user-badge {
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .logout-btn {
+            background: #e63946;
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        /* Unified Centered Workspace Container */
+        .workspace-container {
+            max-width: 520px;
+            width: 100%;
+            margin: auto;
+            padding: 2rem;
+        }
+
+        /* Glassmorphic Upload Card */
+        .upload-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            padding: 3rem 2.5rem;
+            box-shadow: 0 20px 40px rgba(12, 46, 29, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            text-align: center;
+        }
+
+        .upload-card h1 {
+            color: var(--primary-dark);
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+        }
+
+        .upload-card p {
+            color: #64748b;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .drop-zone {
+            border: 2px dashed #cbd5e1;
+            padding: 3.5rem 1.5rem;
+            border-radius: 16px;
+            background-color: #f8fafc;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-bottom: 2rem;
+        }
+
+        .drop-zone:hover {
+            border-color: var(--accent-green);
+            background-color: #f0fdf4;
+            box-shadow: inset 0 0 12px rgba(45, 106, 79, 0.05);
+        }
+
+        .drop-zone i {
+            font-size: 3.5rem;
+            color: var(--accent-green);
+            margin-bottom: 1.25rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .submit-btn {
+            background-color: #ffb703;
+            color: #1b4332;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 6px 15px rgba(255, 183, 3, 0.3);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--primary-dark);
+            color: white;
+            box-shadow: 0 6px 15px rgba(27, 67, 50, 0.3);
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Strict Centered Header Bar -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="/" class="logo">
+                <i class="fa-solid fa-leaf"></i> LEAFSCAN
+            </a>
+        </div>
+
+        <div>
+            <ul class="nav-menu-tabs">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('upload') }}" class="active-tab">Scan Leaf</a></li>
+                <li><a href="{{ url_for('history') }}">History</a></li>
+                <li><a href="{{ url_for('growth') }}">Growth</a></li>
+            </ul>
+        </div>
+
+        <div class="navbar-right">
+            <span class="user-badge">Hello, {{ session.get('user') or 'Shivam' }} 👋</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Centered Form Module Container -->
+    <main class="workspace-container">
+        
+        <div class="upload-card">
+            <h1>AI Leaf Scan Room</h1>
+            <p>Upload a clear photo of an infected plant leaf and get actionable chemical or organic treatment pathways within seconds.</p>
+            
+            <form action="{{ url_for('upload') }}" method="POST" enctype="multipart/form-data">
+                <div class="drop-zone" onclick="document.getElementById('leaf-file').click()">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                    <p style="font-weight: 700; color: #334155; margin-bottom: 4px;">Click to upload crop image</p>
+                    <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 0;">Supports PNG, JPG, JPEG formats</p>
+                    <input type="file" name="leaf" id="leaf-file" class="file-input" required onchange="showFilename(this)">
+                    <p id="file-name-display" style="margin-top: 14px; font-weight: 700; color: var(--accent-green); font-size: 0.95rem;"></p>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Execute Diagnostics Run
+                </button>
+            </form>
+        </div>
+
+    </main>
+
+    <script>
+        function showFilename(input) {
+            const display = document.getElementById('file-name-display');
+            if (input.files && input.files[0]) {
+                display.innerHTML = "<i class='fa-solid fa-file-image'></i> Selected: " + input.files[0].name;
+            }
+        }
+    </script>
+</body>
+</html>

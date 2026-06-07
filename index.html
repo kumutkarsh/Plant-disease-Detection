@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeafScan - Diagnostic History</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Safe internal design fallback variables in case root external variables mismatch */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            text-align: left;
+        }
+        th, td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #f8fafc;
+            color: #1b4332;
+            font-weight: 700;
+        }
+        .empty-history-box {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px dashed #cbd5e1;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <i class="fa-solid fa-leaf"></i> LEAFSCAN
+        </a>
+        <ul class="nav-links">
+            <li><a href="/welcome">Home</a></li>
+            <li><a href="/upload">Scan Leaf</a></li>
+            <li><a href="/history" class="active">History</a></li>
+            <li><a href="/growth">Growth</a></li>
+        </ul>
+    </nav>
+
+    <div class="container" style="max-width: 1000px; margin: 3rem auto; padding: 0 20px;">
+        
+        <div style="margin-bottom: 2rem; text-align: left;">
+            <h2 style="color: #1b4332; font-size: 2rem; margin-bottom: 0.5rem; font-weight: 700;">
+                <i class="fa-solid fa-clock-history" style="color: #2d6a4f; margin-right: 0.5rem;"></i> Scan History Logs
+            </h2>
+            <p style="color: #64748b; margin: 0;">Review all previously diagnosed plant leaves and past model assessments securely pulled from your records.</p>
+        </div>
+
+        {% if scans and scans|length > 0 %}
+            <div style="overflow-x: auto; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); background: white;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Bar</th>
+                            <th>Leaf Thumbnail</th>
+                            <th>Target Plant Class</th>
+                            <th>AI Classification Result</th>
+                            <th>Confidence Matrix</th>
+                            <th>Timestamp Logged</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for scan in scans %}
+                        <tr>
+                            <td style="font-weight: 600; color: #64748b;">#{{ loop.revindex }}</td>
+                            <td>
+                                <img src="{{ url_for('static', filename='uploads/' + scan.filename) }}" 
+                                     alt="Scan thumbnail" 
+                                     style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            </td>
+                            <td style="font-weight: 600; color: #4a5568;">{{ scan.plant if scan.plant else 'Crop Target' }}</td>
+                            <td>
+                                <span style="font-weight: 600; color: #1b4332;">{{ scan.prediction }}</span>
+                            </td>
+                            <td>
+                                <span style="background: #e2e8f0; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: #334155;">
+                                    {{ scan.confidence }}
+                                </span>
+                            </td>
+                            <td style="color: #64748b; font-size: 0.9rem;">{{ scan.date }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-history-box">
+                <i class="fa-solid fa-folder-open" style="font-size: 3.5rem; color: #cbd5e1; margin-bottom: 1.25rem;"></i>
+                <h3 style="color: #1b4332; margin: 0 0 8px 0; font-size: 1.3rem; font-weight: 700;">No Scans Logged Yet</h3>
+                <p style="color: #64748b; margin: 0 0 1.5rem 0; font-size: 0.95rem;">You haven't run any diagnostic image uploads on this dashboard yet.</p>
+                <a href="/upload" style="display: inline-block; background: #2d6a4f; color: white; padding: 11px 22px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.9rem; transition: background 0.2s;">
+                    <i class="fa-solid fa-camera" style="margin-right: 6px;"></i> Run Your First Diagnosis Scan
+                </a>
+            </div>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

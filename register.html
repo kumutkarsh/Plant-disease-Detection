@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeafScan - Create Account</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Base Reset & Application Variables */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e9f5db 0%, #f8f9fa 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        /* Fixed Navigation Layout Rules with strict mathematical alignment */
+        .navbar {
+            background-color: white;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            padding: 20px 40px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            width: 100%;
+        }
+
+        .navbar-left {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .navbar-right {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .navbar .logo {
+            color: #2d6a4f;
+            font-weight: bold;
+            font-size: 24px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #2d6a4f;
+        }
+
+        /* Registration Card Wrapper Layout */
+        .login-container {
+            flex-grow: 1; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 40px 20px;
+        }
+
+        .login-wrapper {
+            max-width: 440px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(27, 67, 50, 0.08);
+            border: 1px solid #e2e8f0;
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        .login-wrapper h1 {
+            color: #1b4332;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .login-wrapper p {
+            color: #718096;
+            font-size: 0.95rem;
+            margin: 0 0 2rem 0;
+        }
+
+        /* Form Input Box Mechanics */
+        .input-box {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        .input-box label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #2d3748;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-box label i {
+            margin-right: 4px;
+            color: #40916c;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: #2d3748;
+            background-color: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #40916c;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.15);
+        }
+
+        /* Action Buttons */
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #2d6a4f;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: background 0.2s ease, transform 0.1s ease;
+            margin-top: 1.5rem;
+        }
+
+        .submit-btn:hover {
+            background: #1b4332;
+        }
+
+        .submit-btn:active {
+            transform: scale(0.99);
+        }
+
+        .register-footer {
+            margin-top: 2rem; 
+            padding-top: 1.5rem; 
+            border-top: 1px solid #edf2f7; 
+            font-size: 0.9rem; 
+            color: #718096;
+        }
+
+        .register-footer a {
+            color: #40916c; 
+            font-weight: 600; 
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .register-footer a:hover {
+            color: #1b4332;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-left">
+            <a href="{{ url_for('welcome') }}" class="logo">
+                <i class="fa-solid fa-leaf"></i> LeafScan
+            </a>
+        </div>
+        
+        <div>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('welcome') }}">Home</a></li>
+                <li><a href="{{ url_for('login') }}">Sign In</a></li>
+            </ul>
+        </div>
+        
+        <div class="navbar-right"></div>
+    </nav>
+
+    <div class="login-container">
+        <div class="login-wrapper">
+            
+            <div style="background: #e8f5e9; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem auto; color: #1b4332;">
+                <i class="fa-solid fa-user-plus" style="font-size: 1.5rem;"></i>
+            </div>
+
+            <h1>Create Account</h1>
+            <p>Register to unlock diagnostics and track your field history summaries.</p>
+
+            {% if error %}
+                <div style="background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; padding: 12px; border-radius: 10px; margin-bottom: 1.5rem; font-size: 0.9rem; font-weight: 600; text-align: left; display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-circle-exclamation"></i> {{ error }}
+                </div>
+            {% endif %}
+
+            <form action="{{ url_for('register') }}" method="POST">
+                
+                <!-- Full Name Input Field -->
+                <div class="input-box">
+                    <label for="username"><i class="fa-regular fa-user"></i> Full Name</label>
+                    <input type="text" name="username" id="username" class="input-field" placeholder="John Doe" required autocomplete="name">
+                </div>
+
+                <!-- Email Address Input Field -->
+                <div class="input-box">
+                    <label for="email"><i class="fa-regular fa-envelope"></i> Email Address</label>
+                    <input type="email" name="email" id="email" class="input-field" placeholder="name@example.com" required autocomplete="email">
+                </div>
+
+                <!-- Password Input Field -->
+                <div class="input-box" style="margin-bottom: 1.5rem;">
+                    <label for="password"><i class="fa-solid fa-key" style="font-size: 0.8rem;"></i> Password</label>
+                    <input type="password" name="password" id="password" class="input-field" placeholder="••••••••" required autocomplete="new-password">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    Register <i class="fa-solid fa-user-check"></i>
+                </button>
+            </form>
+
+            <div class="register-footer">
+                Already have an account? <a href="{{ url_for('login') }}">Sign in here</a>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
